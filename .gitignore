@@ -33,3 +33,6 @@ build/
 .vscode/
 
 resources/
+AxonServer/
+docker-data/eventdata
+docker-data/data
