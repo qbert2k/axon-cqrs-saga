@@ -2,6 +2,7 @@ package com.appsdeveloperblog.estore.ProductsService;
 
 import com.appsdeveloperblog.estore.ProductsService.command.interceptors.CreateProductCommandInterceptor;
 import com.appsdeveloperblog.estore.ProductsService.core.errorhandling.ProductsServiceEventsErrorHandler;
+import com.appsdeveloperblog.estore.core.commands.config.AxonConfig;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.config.EventProcessingConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 
 @EnableDiscoveryClient
 @SpringBootApplication
+@Import({AxonConfig.class})
 public class ProductsServiceApplication {
 
     public static void main(String[] args) {
