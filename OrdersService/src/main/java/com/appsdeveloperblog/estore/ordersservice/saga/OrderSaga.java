@@ -1,6 +1,8 @@
 package com.appsdeveloperblog.estore.ordersservice.saga;
 
+import com.appsdeveloperblog.estore.core.commands.ProcessPaymentCommand;
 import com.appsdeveloperblog.estore.core.commands.ReserveProductCommand;
+import com.appsdeveloperblog.estore.core.commands.events.PaymentProcessedEvent;
 import com.appsdeveloperblog.estore.core.commands.events.ProductReservedEvent;
 import com.appsdeveloperblog.estore.core.model.User;
 import com.appsdeveloperblog.estore.core.query.FetchUserPaymentDetailsQuery;
@@ -19,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Saga
 public class OrderSaga {
@@ -82,5 +86,29 @@ public class OrderSaga {
         }
 
         LOGGER.info("Successfully fetched user payment details for user " + userPaymentDetails.getFirstName());
+
+        ProcessPaymentCommand processPaymentCommand = ProcessPaymentCommand.builder()
+                .orderId(productReservedEvent.getOrderId())
+                .paymentDetails(userPaymentDetails.getPaymentDetails())
+                .paymentId(UUID.randomUUID().toString())
+                .build();
+
+        String result = null;
+        try {
+            result = commandGateway.sendAndWait(processPaymentCommand, 10, TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage());
+            // Start compensating transaction
+        }
+
+        if (result == null) {
+            LOGGER.info("The ProcessPaymentCommand resulted in NULL. Initiating a compensation transaction");
+            // Start compensating transaction
+        }
+    }
+
+    @SagaEventHandler(associationProperty = "orderId")
+    public void handle(PaymentProcessedEvent paymentProcessedEvent) {
+        // Send an ApproveOrderCommand
     }
 }
