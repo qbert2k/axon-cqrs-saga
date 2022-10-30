@@ -1,6 +1,6 @@
 package com.appsdeveloperblog.estore.ordersservice.core.data;
 
-import com.appsdeveloperblog.estore.ordersservice.command.OrderStatus;
+import com.appsdeveloperblog.estore.ordersservice.core.model.OrderStatus;
 import lombok.Data;
 
 import javax.persistence.*;
