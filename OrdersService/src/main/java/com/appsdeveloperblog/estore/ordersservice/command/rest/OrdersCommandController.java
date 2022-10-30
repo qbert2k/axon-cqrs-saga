@@ -1,6 +1,6 @@
 package com.appsdeveloperblog.estore.ordersservice.command.rest;
 
-import com.appsdeveloperblog.estore.ordersservice.command.CreateOrderCommand;
+import com.appsdeveloperblog.estore.ordersservice.command.commands.CreateOrderCommand;
 import com.appsdeveloperblog.estore.ordersservice.command.OrderStatus;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -3,6 +3,7 @@ package com.appsdeveloperblog.estore.ProductsService.query;
 import com.appsdeveloperblog.estore.ProductsService.core.data.ProductEntity;
 import com.appsdeveloperblog.estore.ProductsService.core.data.ProductRepository;
 import com.appsdeveloperblog.estore.ProductsService.core.events.ProductCreatedEvent;
+import com.appsdeveloperblog.estore.core.commands.events.ProductReservationCancelEvent;
 import com.appsdeveloperblog.estore.core.commands.events.ProductReservedEvent;
 import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
@@ -54,12 +55,25 @@ public class ProductEventsHandler {
 
         productEntity.setQuantity(productEntity.getQuantity() - productReservedEvent.getQuantity());
 
-
         productRepository.save(productEntity);
 
         LOGGER.debug("ProductReservedEvent: New product quantity " + productEntity.getQuantity());
 
         LOGGER.info("ProductReservedEvent is called for productId:" + productReservedEvent.getProductId() +
                 " and orderId: " + productReservedEvent.getOrderId());
+    }
+
+    @EventHandler
+    public void on(ProductReservationCancelEvent productReservationCancelEvent) {
+        ProductEntity currentStoredProduct = productRepository.findByProductId(productReservationCancelEvent.getProductId());
+
+        LOGGER.debug("ProductReservationCancelEvent: Current product quantity " + currentStoredProduct.getQuantity());
+
+        int quantity = currentStoredProduct.getQuantity() + productReservationCancelEvent.getQuantity();
+        currentStoredProduct.setQuantity(quantity);
+
+        productRepository.save(currentStoredProduct);
+
+        LOGGER.debug("ProductReservationCancelEvent: New product quantity " + currentStoredProduct.getQuantity());
     }
 }
